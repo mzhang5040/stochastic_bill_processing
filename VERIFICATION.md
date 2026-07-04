@@ -14,7 +14,7 @@ From the package root, after `pip install -r requirements.txt` and
 | Command | Produces |
 |---|---|
 | `python run_all.py` | Tables 1–3; Table 5 (party, primary + robustness); Table 8; Figures 2–6; summary |
-| `python run_all.py --bootstrap` | Table 4 / Appendix bootstrap 95% CIs |
+| `python run_all.py --bootstrap` | Table 4 bootstrap 95% CIs |
 | `python conditional_analysis.py` | Section 3.4 conditional Out-of-Committee hazards by party |
 | `python chamber_coding.py` | Tables 6–7 bicameral decomposition (reads `data/chamber_coding.csv`) |
 | `python test_het.py` | Table 8 / Section 3.6 homogeneity tests |
@@ -70,7 +70,8 @@ Discrepancies: 0
 
 (0 of 100 gives a one-sided 95% upper confidence bound of approximately 3.0% for the first-committee false-clearance rate.)
 
-`run_all.py --bootstrap` reproduces the Table 4 95% CIs (floor sensitivity
+`run_all.py --bootstrap` reproduces the Table 4 95% CIs (first-committee sensitivity
+[-0.938,-0.878] / [-0.900,-0.813] / [-0.857,-0.780]; floor sensitivity
 [-0.838,-0.760] / [-0.807,-0.711] / [-0.836,-0.757]; OOC sensitivity
 [-0.842,-0.768] / [-0.797,-0.700] / [-0.858,-0.783]).
 
