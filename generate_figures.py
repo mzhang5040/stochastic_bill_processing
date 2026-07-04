@@ -16,6 +16,8 @@ import markov_chain as mc
 # Publication-quality defaults
 mpl.rcParams.update({
     'font.family': 'serif',
+    'font.serif': ['Liberation Serif', 'Times New Roman', 'DejaVu Serif'],
+    'mathtext.fontset': 'stix',
     'font.size': 10,
     'axes.labelsize': 10,
     'axes.titlesize': 10,
@@ -74,7 +76,7 @@ def fig_transition_probabilities():
     ax.set_axisbelow(True)
     ax.legend(title='Session', frameon=False, loc='upper right')
     fig.tight_layout()
-    fig.savefig(f'{FIGDIR}/transition_probs.png', dpi=200, bbox_inches='tight')
+    fig.savefig(f'{FIGDIR}/transition_probs.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
     print('  Saved: transition_probs.png')
 
@@ -122,7 +124,7 @@ def fig_party_gap():
         ax.legend(frameon=False, fontsize=7.5, loc='upper right')
 
     fig.tight_layout()
-    fig.savefig(f'{FIGDIR}/party_gap.png', dpi=200, bbox_inches='tight')
+    fig.savefig(f'{FIGDIR}/party_gap.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
     print('  Saved: party_gap.png')
 
@@ -184,12 +186,12 @@ def fig_sensitivities():
     ax.set_xticklabels(sessions)
     ax.set_xlabel('Session')
     ax.set_ylabel(r'Sensitivity magnitude')
-    ax.set_ylim(0.65, 0.96)
-    ax.legend(frameon=False, loc='lower left', fontsize=8)
+    ax.set_ylim(0, 1.0)
+    ax.legend(frameon=False, loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=3, fontsize=8)
     ax.grid(axis='y', alpha=0.3, linewidth=0.4)
     ax.set_axisbelow(True)
     fig.tight_layout()
-    fig.savefig(f'{FIGDIR}/sensitivities.png', dpi=200, bbox_inches='tight')
+    fig.savefig(f'{FIGDIR}/sensitivities.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
     print('  Saved: sensitivities.png')
 
@@ -237,13 +239,13 @@ def fig_cohorts():
     ax.set_xticks(range(3))
     ax.set_xticklabels(tertile_labels)
     ax.set_xlabel('Introduction-date tertile')
-    ax.set_ylabel(r'Conditional OOC failure rate (\% of bills reaching OOC)')
-    ax.set_ylim(0, 22)
+    ax.set_ylabel('Conditional OOC Failure Rate (%)')
+    ax.set_ylim(0, 22.5)
     ax.legend(title='Session', frameon=False, loc='upper right')
     ax.grid(axis='y', alpha=0.3, linewidth=0.4)
     ax.set_axisbelow(True)
     fig.tight_layout()
-    fig.savefig(f'{FIGDIR}/cohorts.png', dpi=200, bbox_inches='tight')
+    fig.savefig(f'{FIGDIR}/cohorts.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
     print('  Saved: cohorts.png')
 
@@ -283,7 +285,7 @@ def fig_bicameral():
     ax.grid(axis='y', alpha=0.3, linewidth=0.4)
     ax.set_axisbelow(True)
     fig.tight_layout()
-    fig.savefig(f'{FIGDIR}/bicameral.png', dpi=200, bbox_inches='tight')
+    fig.savefig(f'{FIGDIR}/bicameral.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
     print('  Saved: bicameral.png')
 
