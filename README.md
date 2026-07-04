@@ -1,90 +1,169 @@
-# Code for the SIURO paper
+# Reproduction package — *Bottlenecks and Committee Filtering: A Markov Chain Analysis of Bill Progression in the Colorado General Assembly*
 
-**"Bottlenecks and Committee Filtering: A Markov Chain Analysis of Bill
-Progression in the Colorado General Assembly"**
+This package reproduces every quantitative result, table, and figure in the JHSS
+manuscript from the primary public source data (the Colorado House status
+sheets). Given the three status-sheet PDFs (downloaded by `fetch_data.py`) and a
+Python environment, running `python run_all.py` regenerates the full analysis.
 
-This is the curated, verified reproduction package. Every number, table, and
-figure in `paper_siuro_updated.tex` is reproduced by the code below. The
-pipeline has been checked end-to-end against the raw Colorado House status
-sheets (see `VERIFICATION.md`).
+---
 
-## Quick start
+## 1. Contents
+
+```
+├── README.md                  This file
+├── requirements.txt           Python dependencies
+├── fetch_data.py              Downloads the 3 public status-sheet PDFs into data/
+├── run_all.py                 Master script: parse → estimate → tables → figures
+│
+├── parse_status_sheets.py     PDF → per-bill Markov state sequences (corrected coding rule)
+├── markov_chain.py            Absorbing-chain estimation, fundamental matrix, sensitivity, bootstrap
+├── results_tables.py          Paper Tables 1–3, 5 (party, primary + robustness), 8
+├── generate_figures.py        Paper Figures 2–6 (PNG)
+├── conditional_analysis.py    Risk-set conditional OOC hazards by party (Section 3.4)
+├── party_by_cohort.py         Cohort-adjusted party gap (Robustness)
+├── chamber_coding.py          Bicameral decomposition of the 62 floor failures (Tables 6–7)
+├── build_party_map.py         (Re)builds data/sponsor_parties.csv from the PDFs + rosters
+├── mh_analysis.py             Mantel–Haenszel pooled odds ratios (Robustness)
+├── test_het.py                Within-session time-homogeneity χ² tests (Table 8 / Section 3.6)
+│
+└── data/
+    ├── sponsor_parties.csv     Primary-sponsor party (D/R) for all 1,156 bills  [included]
+    ├── chamber_coding.csv      Manual chamber attribution of the 62 floor failures [included]
+    └── <status-sheet PDFs>     Primary source data — fetched by fetch_data.py     [not included]
+```
+
+The **raw status-sheet PDFs are not redistributed** in this package. They are
+public records of the Colorado General Assembly; `fetch_data.py` retrieves them
+directly from the Assembly's servers. The two CSVs **are** included: one is the
+derived primary-sponsor party map, the other is the hand-coded chamber
+attribution of the floor failures.
+
+---
+
+## 2. Requirements
+
+- Python 3.10 or newer
+- Packages in `requirements.txt` (`pdfplumber`, `numpy`, `scipy`, `matplotlib`)
 
 ```bash
-pip install pdfplumber numpy scipy matplotlib
-
-# Place the three source PDFs in data/ (see "Required input data" below), then:
-python run_all.py                 # tables + figures
-python run_all.py --bootstrap     # also compute Appendix A bootstrap CIs (~3 min)
+pip install -r requirements.txt
 ```
 
-## Required input data
+---
 
-Three Colorado House final status sheets (public), placed in `data/`:
+## 3. Reproduce (three commands)
 
-```
-data/2022-house-final-status-sheet-accessible.pdf   (HB22-1001..1418)
-data/2023-house-final-status-sheet-accessible.pdf   (HB23-1001..1311)
-data/2024-house-final-status-sheet-accessible.pdf   (HB24-1001..1472)
-```
-
-Source: https://content.leg.colorado.gov/sites/default/files/&lt;year&gt;-house-final-status-sheet-accessible.pdf
-(also searchable at https://leg.colorado.gov/bill-search).
-
-Two derived CSVs are included:
-
-```
-data/sponsor_parties.csv    primary-sponsor party (D/R) per bill  [included]
-data/chamber_coding.csv     chamber-level coding of every On_Floor->Failed bill [included]
+```bash
+pip install -r requirements.txt
+python fetch_data.py      # downloads the 3 House status-sheet PDFs into data/
+python run_all.py         # prints all tables to stdout, writes figures to figures/
 ```
 
-## Module index
+To include the bootstrap 95% confidence intervals used in Table 4 and the
+supplementary bootstrap table (adds a few minutes):
 
-### Core pipeline (reproduces every table and figure)
-
-| File | Purpose |
-|------|---------|
-| `parse_status_sheets.py` | Parse the raw PDFs into per-bill trajectory records. Implements the corrected first-committee coding rule (Section 6, "A methodological contribution"). |
-| `markov_chain.py` | Absorbing-chain estimation: Q, R, fundamental matrix N, absorption B, expected steps t, sensitivity coefficients (Proposition 2.7 / Corollary 2.9), and the non-parametric bootstrap. |
-| `results_tables.py` | Print Tables 1, 2, 3, 7 (party), 8 (cohort), and A1 (bootstrap). Uses `sponsor_parties.csv` and `chamber_coding.csv` when present. |
-| `generate_figures.py` | Figures 2-6. The bicameral figure reads counts from `chamber_coding.csv` (not hardcoded). |
-| `run_all.py` | Master pipeline: parse -> estimate -> print tables -> generate figures. |
-
-### Data preparation
-
-| File | Purpose |
-|------|---------|
-| `build_party_map.py` | (Re)generate `sponsor_parties.csv` from the raw PDFs plus the 73rd/74th GA Republican rosters (Colorado House 41D-24R in 2022, 46D-19R in 2023-24). |
-| `chamber_coding.py` | Load and validate `chamber_coding.csv` for the bicameral decomposition (Tables 5-6, Figure 6). `validate()` fails loudly if any per-year total drifts from the parser's On_Floor->Failed count. |
-
-### Robustness checks (all cited in the paper)
-
-| File | Purpose |
-|------|---------|
-| `test_het.py` | Within-session time-heterogeneity chi-square tests by stage (Table 8 / Section "Within-Session Heterogeneity"). |
-| `party_by_cohort.py` | First-committee party gap by introduction-date tertile (Robustness, "Cohort-adjusted party gap"). |
-| `mh_analysis.py` | Mantel-Haenszel first-committee odds ratios, cohort-adjusted (Robustness). |
-| `conditional_analysis.py` | Risk-set (conditional) OOC hazards by party, cross-session OOC transition test, and first-committee sensitivity (Sections 4.2--4.4, 4.6). Reproduces the conditional quantities added in revision. |
-
-## Verification
-
-`VERIFICATION.md` documents an end-to-end check of the pipeline against the
-raw status sheets. In brief, running the full pipeline on all three real PDFs
-reproduces the paper's Table 1-4 numbers exactly:
-
-```
-2022: N=400  InComm->F 63  OOC->F 17  Floor->F 14  Passed 306  B00=0.7650
-2023: N=311  InComm->F 57  OOC->F 17  Floor->F 19  Passed 218  B00=0.7010
-2024: N=445  InComm->F 47  OOC->F 43  Floor->F 29  Passed 326  B00=0.7326
+```bash
+python run_all.py --bootstrap
 ```
 
-and the corresponding sensitivity coefficients:
+If `fetch_data.py` cannot reach the files (offline, or the Assembly moves them),
+download the three "House Final Status Sheet" PDFs manually from
+<https://leg.colorado.gov/bill-search> and place them in `data/` under the exact
+filenames printed by `fetch_data.py`. Then run `python run_all.py`.
+
+Individual components can also be run on their own, e.g.:
+
+```bash
+python parse_status_sheets.py      # prints per-session passage rates (a quick sanity check)
+python conditional_analysis.py     # conditional OOC hazards by party
+python chamber_coding.py           # bicameral decomposition (Tables 6–7)
+python test_het.py                 # time-homogeneity tests
+python generate_figures.py         # figures only
+```
+
+---
+
+## 4. What maps to what in the paper
+
+| Paper object | Produced by |
+|---|---|
+| Table 1 — transition probabilities | `results_tables.table1_transitions` |
+| Table 2 — failures by stage | `results_tables.table2_failures` |
+| Table 3 — absorption (B, t) | `results_tables.table3_absorption` |
+| Table 4 — sensitivity coefficients + bootstrap CIs | `markov_chain` (compute + `bootstrap_*`); run with `--bootstrap` |
+| Table 5 — party stratification (primary) | `results_tables.table7_party` |
+| Table 5 — exclusion robustness | `results_tables.table7_party_exclusion_robustness` |
+| Tables 6–7 — bicameral decomposition | `chamber_coding.py` (uses `data/chamber_coding.csv`) |
+| Table 8 — cohort time-heterogeneity | `results_tables.table8_time_heterogeneity`, `test_het.py` |
+| Section 3.4 — conditional OOC hazards by party | `conditional_analysis.py` |
+| Robustness — cohort-adjusted gap / MH odds ratios | `party_by_cohort.py`, `mh_analysis.py` |
+| Figure 1 — chain diagram | schematic (drawn in the manuscript; not data-derived) |
+| Figure 2 — transition probabilities | `generate_figures.fig_transition_probabilities` |
+| Figure 3 — sensitivity coefficients | `generate_figures.fig_sensitivities` |
+| Figure 4 — party comparison | `generate_figures.fig_party_gap` |
+| Figure 5 — floor-failure decomposition | `generate_figures.fig_bicameral` |
+| Figure 6 — cohort comparison | `generate_figures.fig_cohorts` |
+
+Figure 1 (the state-space diagram) is a schematic and is included with the
+manuscript's figure files; it is not generated from the data.
+
+---
+
+## 5. Expected output (correctness check)
+
+A correct run reports these per-session passage rates (after excluding
+supplemental appropriations, which pass by construction):
 
 ```
-2022: Floor -0.8000  OOC -0.8056        2023: Floor -0.7621  OOC -0.7512
-2024: Floor -0.7978  OOC -0.8213
+2022: 76.5%   2023: 70.1%   2024: 73.3%
 ```
 
-## Dependencies
+and these bill counts and first-committee failure counts:
 
-Python 3.10+, `pdfplumber`, `numpy`, `scipy`, `matplotlib`. No others.
+```
+Bills analyzed:            2022 = 400    2023 = 311    2024 = 445   (total 1,156)
+In Committee → Failed:     2022 =  63    2023 =  57    2024 =  47   (total   167)
+```
+
+The passage probability B(0,0) equals the empirical passage rate exactly under
+maximum likelihood (e.g., 2024 → 0.7326 = 326/445), which is a built-in
+internal-consistency check.
+
+---
+
+## 6. Key data files
+
+- **`data/sponsor_parties.csv`** — one row per bill: `bill_num`, `year`,
+  `party` (`D`/`R`), and `sponsor`. Covers all 1,156 bills with an identifiable
+  primary House sponsor. This is the **all-sponsor** map used by the paper's
+  primary Table 5; the Herod/McCluskie exclusion is applied downstream only as a
+  robustness variant (`results_tables.table7_party_exclusion_robustness`). It can
+  be regenerated from the PDFs plus the 73rd/74th GA rosters with
+  `build_party_map.py`.
+- **`data/chamber_coding.csv`** — one row per floor failure: `bill_num`,
+  `year`, `chamber` (`Senate`/`House`/`Session-end`). Encodes the manual coding
+  of all 62 On-Floor failures (14 in 2022, 19 in 2023, 29 in 2024) used for the
+  bicameral decomposition; `chamber_coding.py` validates these totals against the
+  parser's floor-failure counts.
+
+---
+
+## 7. Notes on the coding rule
+
+The parser implements the **corrected** first-committee rule: a bill is coded as
+having cleared committee (`Out_of_Committee`) only if its first House committee
+reported it out on a specific date or referred it onward — **not** on the basis
+of the fiscal-impact (FI/NFI) notation, which is recorded for essentially every
+heard bill, including those postponed indefinitely in the same hearing. The
+earlier FI/NFI-based rule misclassified ~10–17% of bills per session; see the
+docstring in `parse_status_sheets.py` (`_classify_first_committee`).
+
+---
+
+## 8. Provenance and licensing
+
+The source data are public records of the Colorado General Assembly (House Daily
+/ Final Status Sheets; member and sponsorship records; chamber and joint rules;
+OLLS action-code definitions). Please cite the Assembly as the data source. The
+code in this package may be used and modified for academic reproduction and
+extension.
