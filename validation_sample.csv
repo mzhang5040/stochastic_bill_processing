@@ -1,0 +1,101 @@
+year,bill_num,parser_label,independent_label,agree,first_committee_evidence
+2022,1005,cleared,cleared,YES,HI R2/3*
+2022,1012,cleared,cleared,YES,ENE R2/18*
+2022,1025,cleared,cleared,YES,FIN R2/8*
+2022,1038,cleared,cleared,YES,JUD 2/17* FI 2/25* 2/28 3/23 SIG4/12 MORENO & GARDNER 3/3
+2022,1039,cleared,cleared,YES,BUS 2/18 FI 2/23 2/24 SIG3/30 BRIDGES & WOODWARD 2/28
+2022,1063,cleared,cleared,YES,JUD R2/10*
+2022,1074,cleared,cleared,YES,TLG 2/10 FI 2/14 2/15 SIG3/15 HISEY 2/18
+2022,1082,cleared,cleared,YES,JUD R2/10*
+2022,1101,cleared,cleared,YES,ED 2/18* FI 2/23* 2/24 SIG3/18 SONNENBERG & 2/28
+2022,1139,cleared,cleared,YES,TLG 3/10* FI 3/12* 3/16 4/8 SIG5/6 BRIDGES & HISEY 3/21
+2022,1149,cleared,cleared,YES,FIN R3/1*
+2022,1156,cleared,cleared,YES,SA 2/25* NFI 3/1* 3/3 SIG4/18 BRIDGES & GARDNER 3/8
+2022,1162,cleared,cleared,YES,TLG 2/24* FI 2/28* 3/1 4/5 SIG4/22 ZENZINGER & HISEY 3/4
+2022,1187,cleared,cleared,YES,APP 2/8 FI 2/9 2/10 SIG3/7 HANSEN & RANKIN 2/14
+2022,1212,cleared,cleared,YES,PBH R3/2*
+2022,1233,cleared,cleared,YES,HI R4/7*
+2022,1241,cleared,cleared,YES,TLG R3/8
+2022,1242,cleared,cleared,YES,TLG R3/2*
+2022,1244,cleared,cleared,YES,ENE R4/8*
+2022,1249,cleared,cleared,YES,ENE R3/18*
+2022,1252,cleared,cleared,YES,ED 3/11* FI 3/15* 3/16 3/31 SIG4/12 KIRKMEYER & JAQUEZ 3/18
+2022,1267,cleared,cleared,YES,PBH R3/16*
+2022,1284,cleared,cleared,YES,HI R4/14*
+2022,1293,cleared,cleared,YES,HI 4/20* FI LO05/12 DeemedLost ZENZINGER & SMALLWOOD
+2022,1303,cleared,cleared,YES,PBH R3/30*
+2022,1305,cleared,cleared,YES,FIN R3/29
+2022,1308,cleared,cleared,YES,ALW R4/5*
+2022,1318,cleared,cleared,YES,JUD R4/8
+2022,1331,cleared,cleared,YES,APP 3/29 FI-$ 3/30 3/31 SIG4/25 ZENZINGER & RANKIN 4/4
+2022,1332,cleared,cleared,YES,APP 3/29 NFI 3/30 3/31 SIG4/25 HANSEN & RANKIN 4/4
+2022,1344,cleared,cleared,YES,PBH 4/6* FI 4/7* 4/8 SIG6/8 COOKE & GINAL 4/13
+2022,1360,cleared,cleared,YES,PBH 4/20* FI-$ 4/22 4/25 SIG6/3 KOLKER 4/25
+2022,1375,cleared,cleared,YES,PBH R4/26*
+2022,1390,cleared,cleared,YES,ED R4/22*
+2022,1395,cleared,cleared,YES,ED R4/27
+2022,1400,cleared,cleared,YES,FIN 4/28 FI 4/29 5/2 5/11 SIG6/7 MORENO 5/2
+2022,1403,cleared,cleared,YES,HI 4/28 FI 4/28 4/29 SIG5/20 BUCKNER 4/29
+2022,1410,cleared,cleared,YES,BUS 4/28* FI 4/29* 5/2 SIG6/7 HOLBERT & RODRIGUEZ 5/2
+2023,1001,cleared,cleared,YES,ED 1/27* FI 2/1* 2/2 3/20 SIG4/10 ZENZINGER 2/6
+2023,1004,cleared,cleared,YES,BUS 1/26* FI 1/30* 1/31 3/20 SIG4/11 GONZALES 1/31
+2023,1006,cleared,cleared,YES,BUS 1/27* FI 2/1* 2/2 SIG3/31 EXUM 2/6
+2023,1025,cleared,cleared,YES,ED 2/24* FI 2/27* 2/28 4/13 SIG4/25 JENET 3/2
+2023,1027,cleared,cleared,YES,JUD R2/9*
+2023,1037,cleared,cleared,YES,JUD 2/8* FI 2/17* 2/20 3/20 SIG4/12 GONZALES 2/23
+2023,1056,cleared,cleared,YES,SA 3/30 FI 4/10 4/11 SIG6/5 CUTTER 4/18
+2023,1059,cleared,cleared,YES,THL R2/15*
+2023,1068,cleared,cleared,YES,THL R2/23*
+2023,1089,cleared,cleared,YES,ED 3/17* FI 3/20* 3/21 SIG4/25 ZENZINGER 3/22
+2023,1090,cleared,cleared,YES,THL 2/8* FI 2/17* 2/20 RODRIGUEZ 2/23
+2023,1111,cleared,cleared,YES,FIN 2/9 FI-$ 2/10 2/13 SIG3/31 HANSEN 2/13
+2023,1116,cleared,cleared,YES,HI 2/1* FI-$ 2/2* 2/3 3/14 SIG4/10 RODRIGUEZ & BAISLEY 2/6
+2023,1172,cleared,cleared,YES,PBH 2/23 FI 2/27 2/28 SIG4/12 JAQUEZ LEWIS 3/2
+2023,1184,cleared,cleared,YES,THL R3/1*
+2023,1187,cleared,cleared,YES,JUD 2/23* FI 3/2* 3/3 4/26 SIG5/23 GONZALES & FIELDS 3/6
+2023,1216,cleared,cleared,YES,ENE 3/30* FI 4/10* 4/11* CC5/4 HRE5/8 DANIELSON 4/14
+2023,1228,cleared,cleared,YES,PBH R3/22*
+2023,1236,cleared,cleared,YES,PBH 3/29* FI-$ 4/10* 4/11 5/4 SRC5/2 KOLKER & SIMPSON 4/12
+2023,1247,cleared,cleared,YES,ENE R3/30*
+2023,1257,cleared,cleared,YES,THL R4/13*
+2023,1289,cleared,cleared,YES,FIN R4/17*
+2023,1290,cleared,cleared,YES,FIN R4/18
+2023,1291,cleared,cleared,YES,ED R4/20*
+2023,1292,cleared,cleared,YES,JUD 4/19* FI 4/21* 4/24 5/4 SIG6/1 GONZALES & GARDNER 4/25
+2023,1295,cleared,cleared,YES,APP 4/28* FI-$ 4/29* 5/1 5/7 SIG6/1 ZENZINGER & KIRKMEYER 5/1
+2023,1309,cleared,cleared,YES,FIN R4/27*
+2024,1017,cleared,cleared,YES,HHS 1/25* FI 1/29* 2/9 SIG4/24 ZENZINGER & MICHAELSON 2/28
+2024,1020,cleared,cleared,YES,JUD 1/24 NFI 1/25 1/26 SIG2/20 GARDNER & HANSEN 1/29
+2024,1027,cleared,cleared,YES,FIN R2/6*
+2024,1033,cleared,cleared,YES,AWN 2/13* FI 2/14* 2/15 3/26 SIG4/11 CUTTER & JAQUEZ LEWIS 2/20
+2024,1043,cleared,cleared,YES,FIN R2/8
+2024,1045,cleared,cleared,YES,HHS R2/21*
+2024,1075,cleared,cleared,YES,HHS R2/8*
+2024,1079,cleared,cleared,YES,JUD R1/24*
+2024,1083,cleared,cleared,YES,BUS R1/26*
+2024,1102,cleared,cleared,YES,JUD 2/7 NFI 2/9 2/12 SIG4/11 SOPER 2/13
+2024,1105,cleared,cleared,YES,FIN R3/1*
+2024,1125,cleared,cleared,YES,FIN R3/1*
+2024,1142,cleared,cleared,YES,FIN R3/20*
+2024,1146,cleared,cleared,YES,APP 2/1 FI 2/2 2/5 SIG2/20 BRIDGES & ZENZINGER 2/6
+2024,1150,cleared,cleared,YES,SA 2/27* FI 3/8* 3/11 SIG4/19 HINRICHSEN 3/15
+2024,1171,cleared,cleared,YES,HHS 2/29* FI 3/1* 3/4 PELTON R. 3/7
+2024,1175,cleared,cleared,YES,THL 2/21* FI 4/5* 4/8 5/8 SIG5/30 WINTER F. & JAQUEZ LEWIS 4/12
+2024,1176,cleared,cleared,YES,HHS 2/15*
+2024,1177,cleared,cleared,YES,SA 2/27 FI L3/8* PRIOLA
+2024,1219,cleared,cleared,YES,FIN R3/12*
+2024,1225,cleared,cleared,YES,JUD 2/22* FI 3/1* 3/4 SIG4/29 FIELDS & GARDNER 3/5
+2024,1230,cleared,cleared,YES,JUD 3/7* FI 3/22 4/4 DeemedLost WINTER F. & CUTTER 4/8
+2024,1251,cleared,cleared,YES,JUD R2/29
+2024,1265,cleared,cleared,YES,BUS R3/1*
+2024,1324,cleared,cleared,YES,BUS 3/8* FI 3/20* 3/21 5/4 SIG5/31 LISTON & HINRICHSEN 3/25
+2024,1332,cleared,cleared,YES,HHS R2/29
+2024,1336,cleared,cleared,YES,THL R3/13*
+2024,1338,cleared,cleared,YES,ENE R3/22*
+2024,1345,cleared,cleared,YES,JUD R4/3*
+2024,1371,cleared,cleared,YES,THL R4/3*
+2024,1397,cleared,cleared,YES,APP 3/27 FI-$ 3/28 4/1 SIG4/18 BRIDGES & ZENZINGER 4/1
+2024,1405,cleared,cleared,YES,APP 3/27 FI-$ 3/28 4/1 SIG4/18 BRIDGES & ZENZINGER 4/1
+2024,1413,cleared,cleared,YES,APP 3/27 FI-$ 3/28 4/1 CC4/9 CRAS4/19 KIRKMEYER & BRIDGES 4/1
+2024,1468,cleared,cleared,YES,SA 5/2
+2024,1469,cleared,cleared,YES,APP 5/2* FI-$ 5/2* 5/3* SIG6/3 ZENZINGER & BRIDGES 5/3

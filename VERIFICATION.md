@@ -77,6 +77,15 @@ OOC sensitivity [-0.842,-0.768] / [-0.797,-0.700] / [-0.858,-0.783].
 All of the above match the manuscript. `B(0,0)` equals the empirical passage
 rate exactly under maximum likelihood (2024: 0.7326 = 326/445).
 
+First-committee coding validation (`python validate_clearance.py`, seed
+20240101): a reproducible random sample of 100 of the 989 bills the parser
+classifies as clearing first committee was re-derived independently from the raw
+status-sheet text; **0 discrepancies** were found. The same independent check
+flags 164 of the 167 parser-killed (In_Committee -> Failed) bills as killed,
+confirming it discriminates rather than trivially agreeing. The audit is saved as
+`validation_sample.csv`. With 0/100 this bounds the first-committee
+false-clearance rate at at most 3.0% (95% confidence, rule of three).
+
 ## 3. Values confirmed against the manuscript
 
 | | 2022 | 2023 | 2024 |
