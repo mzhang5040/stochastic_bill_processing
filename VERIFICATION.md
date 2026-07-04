@@ -68,6 +68,8 @@ Sample size: 100 (seed=20240101)
 Discrepancies: 0
 ```
 
+(0 of 100 gives a one-sided 95% upper confidence bound of approximately 3.0% for the first-committee false-clearance rate.)
+
 `run_all.py --bootstrap` reproduces the Table 4 95% CIs (floor sensitivity
 [-0.838,-0.760] / [-0.807,-0.711] / [-0.836,-0.757]; OOC sensitivity
 [-0.842,-0.768] / [-0.797,-0.700] / [-0.858,-0.783]).
