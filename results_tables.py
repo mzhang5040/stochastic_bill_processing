@@ -323,22 +323,28 @@ def _run_party_table(all_bills, party_map, exclude_sponsor, party_file):
 # ---------------------------------------------------------------------------
 
 def table8_time_heterogeneity(all_bills: dict[str, list]):
-    """Print Table 8: OOC -> Failed rate by introduction cohort (chi-sq tests).
+    """Print Table 8: conditional OOC -> Failed rate by introduction cohort.
 
-    Uses trajectory-level OOC->Failed rate (OOC_F / all introduced in cohort),
-    matching the paper's Table 8.
+    Uses the risk-set (conditional) rate -- OOC_Failed / (bills reaching OOC)
+    within each introduction-date tertile -- matching the paper's Table 8. A bill
+    is in the risk set if its trajectory reaches Out_of_Committee.
     """
-    header("TABLE 8 — OOC -> Failed rate by introduction cohort")
+    header("TABLE 8 -- Conditional OOC -> Failed rate by introduction cohort (risk set)")
 
     years = sorted(all_bills.keys())
     cohort_labels = ['Early tertile', 'Middle tertile', 'Late tertile']
 
-    # Tertile split: use all bills (bill-number order = intro-date order for CO)
+    def reached_ooc(b):
+        return '-> Out_of_Committee' in b['state_seq']
+
+    def ooc_failed(b):
+        return b['state_seq'] == 'Introduced -> In_Committee -> Out_of_Committee -> Failed'
+
     print(f"{'Cohort':<20}", end='')
     for yr in years:
         print(f"  {yr:>14}", end='')
     print()
-    print('-' * (20 + len(years)*16))
+    print('-' * (20 + len(years) * 16))
 
     chi2_stats = []
     for yr in years:
@@ -349,27 +355,25 @@ def table8_time_heterogeneity(all_bills: dict[str, list]):
         cohorts = [bills[:t1], bills[t1:t2], bills[t2:]]
         chi2_stats.append((yr, cohorts))
 
-    # Print per-tertile OOC->Failed counts as % of cohort total
+    # Per-tertile conditional rate = OOC_failed / reached_OOC (risk set)
     for cohort_idx, cohort_name in enumerate(cohort_labels):
         print(f"{cohort_name:<20}", end='')
         for yr, cohorts in chi2_stats:
             c = cohorts[cohort_idx]
-            n_total = len(c)
-            n_ooc_f = sum(1 for b in c if b['state_seq'] ==
-                          'Introduced -> In_Committee -> Out_of_Committee -> Failed')
-            rate = n_ooc_f / n_total if n_total > 0 else 0
-            print(f"  {rate:5.1%} ({n_ooc_f}/{n_total})", end='')
+            reached = sum(1 for b in c if reached_ooc(b))
+            failed = sum(1 for b in c if ooc_failed(b))
+            rate = failed / reached if reached > 0 else 0
+            print(f"  {rate:5.1%} ({failed}/{reached})", end='')
         print()
 
-    # Aggregate
-    print('-' * (20 + len(years)*16))
+    # Aggregate conditional rate
+    print('-' * (20 + len(years) * 16))
     print(f"{'Aggregate rate':<20}", end='')
     for yr in years:
         bills = all_bills[yr]
-        n_total = len(bills)
-        n_ooc_f = sum(1 for b in bills if b['state_seq'] ==
-                      'Introduced -> In_Committee -> Out_of_Committee -> Failed')
-        rate = n_ooc_f / n_total if n_total > 0 else 0
+        reached = sum(1 for b in bills if reached_ooc(b))
+        failed = sum(1 for b in bills if ooc_failed(b))
+        rate = failed / reached if reached > 0 else 0
         print(f"  {rate:14.1%}", end='')
     print()
 
@@ -377,10 +381,9 @@ def table8_time_heterogeneity(all_bills: dict[str, list]):
     for yr, cohorts in chi2_stats:
         table = []
         for c in cohorts:
-            n_total = len(c)
-            n_ooc_f = sum(1 for b in c if b['state_seq'] ==
-                          'Introduced -> In_Committee -> Out_of_Committee -> Failed')
-            table.append([n_ooc_f, n_total - n_ooc_f])
+            reached = sum(1 for b in c if reached_ooc(b))
+            failed = sum(1 for b in c if ooc_failed(b))
+            table.append([failed, reached - failed])
         try:
             chi2, p, dof, _ = chi2_contingency(table)
             stars = '***' if p < 0.001 else ('**' if p < 0.01 else ('*' if p < 0.05 else ''))
