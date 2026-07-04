@@ -1,0 +1,187 @@
+"""
+chamber_coding.py
+=================
+Make the bicameral decomposition (Table 6, Table 7, Figure 6) reproducible
+from an auditable data file instead of hardcoded counts.
+
+Background
+----------
+In the shipped repo, `generate_figures.fig_bicameral` hardcodes the counts:
+
+    data = {'2022': [6, 2, 4, 2], '2023': [10, 1, 6, 2], '2024': [16, 3, 5, 5]}
+
+and no `chamber_coding.csv` is included, so the paper's strongest surviving
+claim (the bicameral decomposition) cannot be independently audited. This
+module reads `data/chamber_coding.csv` (scaffold provided alongside), validates
+it against the totals the corrected parser produces, and exposes a
+`component_counts()` function that `fig_bicameral` can call instead of the
+hardcoded dict.
+
+CSV schema
+----------
+    bill_num    : int   HB number (e.g. 1115). Blank in scaffold rows you
+                        have not yet coded from the raw PDF.
+    year        : str   '2022' | '2023' | '2024'
+    chamber     : str   one of: Senate-side | House-side | Veto | Session-end
+                        (see Definition 5.1 in the paper for the coding rule)
+    policy_area : str   optional, used for the 2023 Table 5 breakdown
+    note        : str   optional free text
+    verified    : str   'YES' once you have confirmed the row against the raw
+                        status-sheet text; 'NO' for scaffold placeholders
+
+The scaffold is pre-seeded so that the per-cell counts already equal the
+paper's Table 6 (14/19/29 = 62 floor failures) and the 10 named 2023
+Senate-side bills from Table 5 are filled in and marked verified. Your job is
+to fill in the remaining `bill_num` cells from the PDFs and flip `verified`
+to YES, WITHOUT changing any per-cell row count -- the validator below fails
+loudly if a count drifts from the parser's actual On_Floor->Failed set.
+
+Usage
+-----
+    # 1. Audit / integrity check against the corrected parser:
+    python chamber_coding.py
+
+    # 2. In generate_figures.fig_bicameral, replace the hardcoded `data`
+    #    dict with:
+    #        from chamber_coding import component_counts
+    #        counts = component_counts()
+    #        data = {yr: [counts[yr][c] for c in COMPONENTS] for yr in sessions}
+"""
+
+import csv
+import os
+from collections import Counter, defaultdict
+
+CSV_PATH = os.environ.get('CHAMBER_CSV', 'data/chamber_coding.csv')
+
+COMPONENTS = ['Senate-side', 'House-side', 'Veto', 'Session-end']
+
+# Paper Table 6 target counts (used only as a fallback sanity reference; the
+# authoritative check is against the live parser -- see validate()).
+PAPER_TABLE6 = {
+    '2022': {'Senate-side': 6, 'House-side': 2, 'Veto': 4, 'Session-end': 2},
+    '2023': {'Senate-side': 10, 'House-side': 1, 'Veto': 6, 'Session-end': 2},
+    '2024': {'Senate-side': 16, 'House-side': 3, 'Veto': 5, 'Session-end': 5},
+}
+
+
+def load_rows(path=CSV_PATH):
+    with open(path, newline='') as f:
+        return list(csv.DictReader(f))
+
+
+def component_counts(path=CSV_PATH):
+    """Return {year: {component: count}} computed from the CSV."""
+    rows = load_rows(path)
+    out = defaultdict(lambda: {c: 0 for c in COMPONENTS})
+    for r in rows:
+        yr, comp = r['year'], r['chamber'].strip()
+        if comp not in COMPONENTS:
+            raise ValueError(f"Unknown chamber label {comp!r} "
+                             f"(bill {r.get('bill_num')}, {yr})")
+        out[yr][comp] += 1
+    return {y: dict(v) for y, v in out.items()}
+
+
+def derived_shares(path=CSV_PATH):
+    """Reproduce the paper's headline bicameral percentages from the CSV."""
+    cc = component_counts(path)
+    shares = {}
+    for yr, c in cc.items():
+        total = sum(c.values())
+        senate_or_veto = c['Senate-side'] + c['Veto']
+        senate_veto_end = senate_or_veto + c['Session-end']
+        shares[yr] = {
+            'total': total,
+            'senate_side_strict_pct': 100 * c['Senate-side'] / total,
+            'senate_or_veto_pct': 100 * senate_or_veto / total,   # paper: 71/84/72
+            'senate_veto_end_pct': 100 * senate_veto_end / total,  # paper 2023: 95
+            'house_strict_pct': 100 * c['House-side'] / total,     # paper 2024: 10
+        }
+    return shares
+
+
+def validate(all_bills=None, path=CSV_PATH, strict=True):
+    """
+    Integrity check. Confirms:
+      1. every row has a valid chamber label,
+      2. per-year totals equal the number of On_Floor->Failed bills the
+         corrected parser produces (if `all_bills` supplied) -- otherwise
+         falls back to comparing against PAPER_TABLE6 totals,
+      3. no duplicate (bill_num, year) among verified rows,
+      4. reports how many rows are still unverified placeholders.
+    Returns True on success; raises AssertionError on a hard mismatch.
+    """
+    rows = load_rows(path)
+    cc = component_counts(path)
+
+    # (3) duplicate verified bills
+    seen = Counter((r['bill_num'], r['year'])
+                   for r in rows if r['verified'].strip().upper() == 'YES'
+                   and str(r['bill_num']).strip())
+    dupes = [k for k, n in seen.items() if n > 1]
+    assert not dupes, f"Duplicate verified (bill,year): {dupes}"
+
+    # (2) totals
+    if all_bills is not None:
+        parser_floor_fail = {}
+        for yr, bills in all_bills.items():
+            parser_floor_fail[yr] = sum(
+                1 for b in bills
+                if 'On_Floor' in b['state_seq'] and b['markov'] == 'Failed')
+    else:
+        parser_floor_fail = {y: sum(PAPER_TABLE6[y].values())
+                             for y in PAPER_TABLE6}
+
+    ok = True
+    print(f"{'Year':<6}{'CSV total':>10}{'target':>8}{'match':>7}   per-component")
+    for yr in sorted(cc):
+        csv_total = sum(cc[yr].values())
+        target = parser_floor_fail.get(yr)
+        match = (csv_total == target)
+        ok &= match
+        comp_str = ', '.join(f"{c}={cc[yr][c]}" for c in COMPONENTS)
+        print(f"{yr:<6}{csv_total:>10}{str(target):>8}{'  OK' if match else ' FAIL':>7}   {comp_str}")
+
+    n_unverified = sum(1 for r in rows
+                       if r['verified'].strip().upper() != 'YES')
+    n_missing_id = sum(1 for r in rows if not str(r['bill_num']).strip())
+    print(f"\nRows: {len(rows)} total, {n_unverified} unverified, "
+          f"{n_missing_id} with no bill_num yet (fill these from the PDFs).")
+
+    if strict:
+        assert ok, ("CSV per-year totals do not match the target floor-failure "
+                    "counts. Do NOT edit counts to force a match -- if the "
+                    "parser disagrees with the paper, that is a finding.")
+    return ok
+
+
+def print_shares(path=CSV_PATH):
+    print("\nDerived shares (compare to paper Table 6 / Robustness):")
+    print("  paper: senate-or-veto = 71% (2022), 84% (2023), 72% (2024);")
+    print("         +session-end 2023 = 95%; house-strict 2024 = 10%")
+    for yr, s in sorted(derived_shares(path).items()):
+        print(f"  {yr}: n={s['total']:>2}  "
+              f"Sen-strict={s['senate_side_strict_pct']:.0f}%  "
+              f"Sen+veto={s['senate_or_veto_pct']:.0f}%  "
+              f"Sen+veto+end={s['senate_veto_end_pct']:.0f}%  "
+              f"House-strict={s['house_strict_pct']:.0f}%")
+
+
+if __name__ == '__main__':
+    # Try to validate against the live parser if the PDFs are present;
+    # otherwise validate against the paper's Table 6 totals.
+    all_bills = None
+    try:
+        from parse_status_sheets import parse_session, SESSIONS
+        if all(os.path.exists(p) for p, _ in SESSIONS.values()):
+            all_bills = {y: parse_session(p, y, m)
+                         for y, (p, m) in SESSIONS.items()}
+            print("[validating against live parser output]\n")
+        else:
+            print("[PDFs not found -- validating against paper Table 6 totals]\n")
+    except Exception as e:
+        print(f"[parser unavailable ({e}) -- validating against Table 6]\n")
+
+    validate(all_bills)
+    print_shares()
