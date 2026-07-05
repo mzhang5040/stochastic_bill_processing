@@ -52,14 +52,13 @@ def _party_map():
     return pm
 
 
-def _wilson(k, n, z=1.96):
+def _wald(k, n, z=1.96):
+    """Normal-approximation (Wald) 95% CI for a binomial proportion, in percent."""
     if n == 0:
         return (0.0, 0.0)
     p = k / n
-    d = 1 + z * z / n
-    c = (p + z * z / (2 * n)) / d
-    hw = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
-    return (max(0.0, c - hw) * 100, (c + hw) * 100)
+    hw = z * np.sqrt(p * (1 - p) / n)
+    return (max(0.0, p - hw) * 100, min(1.0, p + hw) * 100)
 
 
 # --------------------------------------------------------------------------
@@ -235,7 +234,7 @@ def fig_cohorts(sessions=None):
             reached = sum(1 for b in c if "-> Out_of_Committee" in b["state_seq"])
             failed = sum(1 for b in c if b["state_seq"] == "Introduced -> In_Committee -> Out_of_Committee -> Failed")
             p = 100 * failed / reached if reached else 0
-            l, u = _wilson(failed, reached); pts.append(p); lo.append(p - l); hi.append(u - p)
+            l, u = _wald(failed, reached); pts.append(p); lo.append(p - l); hi.append(u - p)
         ax.errorbar(x, pts, yerr=[lo, hi], fmt=mark[i] + "-", color=COL[i], label=yr,
                     capsize=3, ms=6, lw=1.4, elinewidth=1.1)
     ax.set_xticks(x); ax.set_xticklabels(tert)
