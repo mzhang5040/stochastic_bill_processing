@@ -61,11 +61,12 @@ pip install -r requirements.txt
 ```bash
 pip install -r requirements.txt
 python fetch_data.py      # downloads the 3 House status-sheet PDFs into data/
-python run_all.py         # prints all tables to stdout, writes figures to figures/
+python run_all.py         # prints Tables 1-3, 5, and 8; writes Figures 1-6
+python run_all.py --bootstrap  # additionally prints the Table 4 bootstrap results
+python chamber_coding.py  # prints Tables 6-7 (bicameral decomposition)
 ```
 
-To include the bootstrap 95% confidence intervals used in Table 4 and the
-supplementary bootstrap table (adds a few minutes):
+To include the bootstrap 95% confidence intervals used in Table 4 (adds a few minutes):
 
 ```bash
 python run_all.py --bootstrap
@@ -146,10 +147,12 @@ internal-consistency check.
   be regenerated from the PDFs plus the 73rd/74th GA rosters with
   `build_party_map.py`.
 - **`data/chamber_coding.csv`** — one row per floor failure: `bill_num`,
-  `year`, `chamber` (`Senate-side`/`House-side`/`Veto`/`Session-end`). Encodes the manual coding
-  of all 62 On-Floor failures (14 in 2022, 19 in 2023, 29 in 2024) used for the
-  bicameral decomposition; `chamber_coding.py` validates these totals against the
-  parser's floor-failure counts.
+  `year`, `chamber` (`Senate-side`/`House-side`/`Veto`/`Session-end`), and
+  `policy_area`. It provides (i) the chamber attribution for all 62 On-Floor
+  failures (14 in 2022, 19 in 2023, 29 in 2024) used for the bicameral
+  decomposition (Tables 6-7), and (ii) the 2023 policy-area classification of the
+  ten Senate-side failures used for Table 6. `chamber_coding.py` validates these
+  totals against the parser's floor-failure counts.
 
 ---
 

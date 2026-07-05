@@ -17,7 +17,7 @@ CSV schema
     bill_num    : int   HB number (e.g. 1115).
     year        : str   '2022' | '2023' | '2024'
     chamber     : str   one of: Senate-side | House-side | Veto | Session-end
-                        (see Definition 5.1 in the paper for the coding rule)
+                        (see Section 3.5 in the paper for the coding rule)
     policy_area : str   optional, used for the 2023 Table 6 breakdown
     note        : str   optional free text
     verified    : str   'YES' once the row is confirmed against the raw
@@ -48,7 +48,7 @@ COMPONENTS = ['Senate-side', 'House-side', 'Veto', 'Session-end']
 
 # Paper Table 6 target counts (used only as a fallback sanity reference; the
 # authoritative check is against the live parser -- see validate()).
-PAPER_TABLE6 = {
+PAPER_TABLE7 = {
     '2022': {'Senate-side': 6, 'House-side': 2, 'Veto': 4, 'Session-end': 2},
     '2023': {'Senate-side': 10, 'House-side': 1, 'Veto': 6, 'Session-end': 2},
     '2024': {'Senate-side': 12, 'House-side': 3, 'Veto': 5, 'Session-end': 9},
@@ -97,7 +97,7 @@ def validate(all_bills=None, path=CSV_PATH, strict=True):
       1. every row has a valid chamber label,
       2. per-year totals equal the number of On_Floor->Failed bills the
          corrected parser produces (if `all_bills` supplied) -- otherwise
-         falls back to comparing against PAPER_TABLE6 totals,
+         falls back to comparing against PAPER_TABLE7 totals,
       3. no duplicate (bill_num, year) among verified rows,
       4. reports how many rows are unverified (should be 0).
     Returns True on success; raises AssertionError on a hard mismatch.
@@ -120,8 +120,8 @@ def validate(all_bills=None, path=CSV_PATH, strict=True):
                 1 for b in bills
                 if 'On_Floor' in b['state_seq'] and b['markov'] == 'Failed')
     else:
-        parser_floor_fail = {y: sum(PAPER_TABLE6[y].values())
-                             for y in PAPER_TABLE6}
+        parser_floor_fail = {y: sum(PAPER_TABLE7[y].values())
+                             for y in PAPER_TABLE7}
 
     ok = True
     print(f"{'Year':<6}{'CSV total':>10}{'target':>8}{'match':>7}   per-component")
@@ -147,7 +147,7 @@ def validate(all_bills=None, path=CSV_PATH, strict=True):
 
 
 def print_shares(path=CSV_PATH):
-    print("\nDerived shares (compare to paper Table 6 / Robustness):")
+    print("\nDerived shares (compare to paper Table 7 / Robustness):")
     print("  paper: senate-or-veto = 71% (2022), 84% (2023), 72% (2024);")
     print("         +session-end 2023 = 95%; house-strict 2024 = 10%")
     for yr, s in sorted(derived_shares(path).items()):
@@ -163,6 +163,12 @@ def table6(path=CSV_PATH):
     import csv as _csv
     rows = [r for r in _csv.DictReader(open(path))
             if r['year'] == '2023' and r['chamber'] == 'Senate-side']
+    missing = [r['bill_num'] for r in rows if not (r.get('policy_area') or '').strip()]
+    if missing:
+        raise SystemExit(
+            "VALIDATION FAILED: 2023 Senate-side rows with empty policy_area: "
+            + ", ".join(missing) + ". Populate policy_area in data/chamber_coding.csv "
+            "(see Table 6) before running.")
     by_area = {}
     for r in rows:
         by_area.setdefault(r['policy_area'] or 'Unclassified', []).append(int(r['bill_num']))
@@ -186,7 +192,7 @@ if __name__ == '__main__':
                          for y, (p, m) in SESSIONS.items()}
             print("[validating against live parser output]\n")
         else:
-            print("[PDFs not found -- validating against paper Table 6 totals]\n")
+            print("[PDFs not found -- validating against paper Table 7 totals]\n")
     except Exception as e:
         print(f"[parser unavailable ({e}) -- validating against Table 6]\n")
 

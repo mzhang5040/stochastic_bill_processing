@@ -9,8 +9,10 @@ Tables produced
     Table 1  Transition probabilities (Q and R matrices)
     Table 2  Failures by stage
     Table 3  Absorption probabilities B and expected steps t
-    Table 5  Party stratification (requires sponsor coding CSV)
-    Table 7  Bicameral decomposition (requires sponsor party CSV)
+    Table 5  Party stratification (requires data/sponsor_parties.csv)
+    Table 8  Within-session homogeneity (cohort risk-set test)
+    Table 4  bootstrap 95% CIs (with --bootstrap)
+    (Tables 6-7, the bicameral decomposition, are produced by chamber_coding.py.)
     Table 8  Within-session time heterogeneity chi-square tests
     Table 4 bootstrap 95% confidence intervals
 
@@ -407,7 +409,7 @@ def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
     years = sorted(all_bills.keys())
 
     stat_labels = [
-        ('Bottleneck rate',         'bottleneck_rate',    True),
+        ('Conditional OOC failure rate', 'bottleneck_rate',  True),
         ('Floor failure rate',      'floor_failure_rate', True),
         ('Passage rate B[0,0]',     'passage_rate',       True),
         ('First-committee sensitivity -B[2,0]', 'first_committee_sensitivity', False),
@@ -419,11 +421,15 @@ def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
     print(fmt)
     print('  ' + '-' * 83)
 
+    # Compute the bootstrap once per session and reuse it for every statistic
+    # and for the comparison probabilities below (was recomputed per-statistic).
+    boot_by_year = {yr: bootstrap_chain(all_bills[yr], n_resamples=n_resamples) for yr in years}
+    point_by_year = {yr: compute_chain(all_bills[yr]) for yr in years}
+
     for label, key, is_pct in stat_labels:
         for yr in years:
-            bills = all_bills[yr]
-            boot = bootstrap_chain(bills, n_resamples=n_resamples)
-            point = compute_chain(bills)
+            boot = boot_by_year[yr]
+            point = point_by_year[yr]
 
             if key == 'bottleneck_rate':
                 pt = point.bottleneck_rate
@@ -448,7 +454,7 @@ def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
     print()
     print("  P(|OOC sensitivity| > |Floor sensitivity|) across resamples:")
     for yr in years:
-        b = bootstrap_chain(all_bills[yr], n_resamples=n_resamples)
+        b = boot_by_year[yr]
         prob = float(np.mean(np.abs(b['ooc_sensitivity']) > np.abs(b['floor_sensitivity'])))
         print(f"    {yr}: {prob:.0%}")
 
@@ -485,4 +491,4 @@ if __name__ == '__main__':
         print("\n[Running bootstrap — this takes a few minutes...]")
         tableA1_bootstrap(all_bills, n_resamples=args.n_resamples)
     else:
-        print("\n[Appendix bootstrap table skipped; use --bootstrap to run]")
+        print("\n[Table 4 bootstrap output skipped; use --bootstrap to run]")

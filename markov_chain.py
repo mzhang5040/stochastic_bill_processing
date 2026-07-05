@@ -97,7 +97,7 @@ class ChainResult:
     floor_sensitivity: float   # dB[0,0]/dp[3,Failed] = -N[0,3]  (Case (i))
     ooc_sensitivity: float     # dB[0,0]/dp[2,Failed] = -N[0,2]*B[3,0]  (Case (ii))
 
-    # Bottleneck rate (primary finding)
+    # Conditional OOC failure rate
     bottleneck_rate: float     # p(Out_of_Committee -> Failed)
 
     def summary(self) -> str:
@@ -105,7 +105,7 @@ class ChainResult:
         lines = [
             f"Session {self.year}  ({self.n_bills} bills)",
             f"  Passage rate B[0,0]        : {self.B[0,0]:.4f}",
-            f"  Bottleneck rate (OOC->Fail): {self.bottleneck_rate:.4f}",
+            f"  Conditional OOC failure rate: {self.bottleneck_rate:.4f}",
             f"  Floor failure rate          : {self.R[3,1]:.4f}",
             f"  Expected steps from Intro  : {self.t[0]:.4f}",
             f"  Floor sensitivity -N[0,3]  : {self.floor_sensitivity:.4f}",
@@ -236,7 +236,7 @@ def compute_chain(bills: list[dict], year: str = '') -> ChainResult:
 # ---------------------------------------------------------------------------
 
 def bootstrap_chain(bills: list[dict],
-                    n_resamples: int = 5000,
+                    n_resamples: int = 2000,
                     seed: int = 42) -> dict:
     """
     Non-parametric bootstrap for all key statistics.
@@ -249,14 +249,15 @@ def bootstrap_chain(bills: list[dict],
     bills : list of dict
         Bill records for ONE session.
     n_resamples : int
-        Number of bootstrap resamples (default 5000).
+        Number of bootstrap resamples (default 2000, matching the manuscript).
     seed : int
         Random seed for reproducibility.
 
     Returns
     -------
     dict
-        Keys: 'bottleneck_rate', 'floor_failure_rate', 'passage_rate',
+        Keys: 'bottleneck_rate' (conditional OOC failure rate), 'floor_failure_rate',
+        'passage_rate', 'first_committee_sensitivity',
               'floor_sensitivity', 'ooc_sensitivity'.
         Each value is a 1-D array of length n_resamples.
     """
@@ -327,16 +328,16 @@ if __name__ == '__main__':
         print(result.summary())
         print()
 
-    print("Running bootstrap (5000 resamples per session)...")
+    print("Running bootstrap (2000 resamples per session)...")
     for year, (path, bill_max) in sorted(SESSIONS.items()):
         bills = parse_session(path, year, bill_max)
-        boot = bootstrap_chain(bills, n_resamples=5000)
+        boot = bootstrap_chain(bills, n_resamples=2000)
 
         lo_f, hi_f, sd_f = bootstrap_ci(boot['floor_sensitivity'])
         lo_o, hi_o, sd_o = bootstrap_ci(boot['ooc_sensitivity'])
         lo_b, hi_b, sd_b = bootstrap_ci(boot['bottleneck_rate'])
 
         print(f"\n{year} bootstrap 95% CIs:")
-        print(f"  Bottleneck rate    : [{lo_b:.4f}, {hi_b:.4f}]  SD={sd_b:.4f}")
+        print(f"  Conditional OOC failure rate: [{lo_b:.4f}, {hi_b:.4f}]  SD={sd_b:.4f}")
         print(f"  Floor sensitivity  : [{lo_f:.4f}, {hi_f:.4f}]  SD={sd_f:.4f}")
         print(f"  OOC sensitivity    : [{lo_o:.4f}, {hi_o:.4f}]  SD={sd_o:.4f}")

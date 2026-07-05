@@ -100,6 +100,8 @@ The parser identifies the 62 On-Floor failures. The mode-of-death classification
 `data/chamber_coding.csv` (every row `verified = YES`) and
 validated for per-year totals by `chamber_coding.py`. Table 7 uses this coding,
 and the manuscript matches it, including 2024: **Senate-side 12, House-side 3,
+The `policy_area` field for the ten 2023 Senate-side failures reproduces the six
+categories and counts in Table 6 (`python chamber_coding.py`).
 veto 5, session-end 9**.
 
 ## 5. Scope of the reproduction claim
