@@ -33,7 +33,7 @@ recorded for essentially every bill that receives a committee hearing,
 including bills that are killed in that same committee.  An earlier
 version of this parser used a date-before-FI/NFI pattern as the OOC
 signal, which incorrectly captured the PI date itself and misclassified
-approximately 15% of bills per session.  See `_classify_first_committee`
+10.6-18.3% of bills per session (15.8%, 18.3%, 10.6% in 2022, 2023, 2024).  See `_classify_first_committee`
 for the corrected rule.
 
 Verification

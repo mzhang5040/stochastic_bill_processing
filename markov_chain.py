@@ -10,7 +10,7 @@ Six states: four transient (s0..s3) and two absorbing (a0, a1).
 
     s0  Introduced
     s1  In_Committee
-    s2  Out_of_Committee   (the "bottleneck" state)
+    s2  Out_of_Committee
     s3  On_Floor
     a0  Passed
     a1  Failed
@@ -28,7 +28,7 @@ Key quantities (all derived from the fundamental matrix N = (I-Q)^{-1}):
     t = N 1               expected steps to absorption   (4x1)
     N[0,j]                expected visits to state j from Introduced
 
-Sensitivity (Proposition 2.7 of the paper):
+Sensitivity (Proposition 1 of the paper):
     Case (i)  (R-perturbation): dB[0,0]/dp[j,Failed] = -N[0,j]
     Case (ii) (Q-perturbation): dB[0,0]/dp[j,Failed] = -N[0,j] * B[ell,0]
 
@@ -93,7 +93,7 @@ class ChainResult:
     B: np.ndarray          # (4,2)  absorption probability matrix NR
     t: np.ndarray          # (4,)   expected steps to absorption N*1
 
-    # Sensitivity coefficients (Proposition 2.7)
+    # Sensitivity coefficients (Proposition 1)
     floor_sensitivity: float   # dB[0,0]/dp[3,Failed] = -N[0,3]  (Case (i))
     ooc_sensitivity: float     # dB[0,0]/dp[2,Failed] = -N[0,2]*B[3,0]  (Case (ii))
 
@@ -205,7 +205,7 @@ def compute_chain(bills: list[dict], year: str = '') -> ChainResult:
     B = N @ R                   # absorption probability matrix
     t = N @ np.ones(N_TRANSIENT)  # expected steps to absorption
 
-    # Sensitivity coefficients (Proposition 2.7)
+    # Sensitivity coefficients (Proposition 1)
     # Case (i): floor failure perturbation (R-perturbation)
     #   dB[0,0]/dp[3,Failed] = -N[0,3]
     floor_sens = -N[0, 3]

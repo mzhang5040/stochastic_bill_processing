@@ -155,7 +155,7 @@ having cleared committee (`Out_of_Committee`) only if its first House committee
 reported it out on a specific date or referred it onward — **not** on the basis
 of the fiscal-impact (FI/NFI) notation, which is recorded for essentially every
 heard bill, including those postponed indefinitely in the same hearing. The
-earlier FI/NFI-based rule misclassified ~10–17% of bills per session; see the
+earlier FI/NFI-based rule misclassified ~10.6–18.3% of bills per session; see the
 docstring in `parse_status_sheets.py` (`_classify_first_committee`).
 
 ---

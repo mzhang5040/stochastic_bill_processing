@@ -12,7 +12,7 @@ Tables produced
     Table 5  Bicameral decomposition (requires manual coding CSV)
     Table 7  Party stratification (requires sponsor party CSV)
     Table 8  Within-session time heterogeneity chi-square tests
-    Table A1 Bootstrap confidence intervals (Appendix)
+    Table 4 bootstrap 95% confidence intervals
 
 Usage
 -----
@@ -80,6 +80,7 @@ def table1_transitions(results: dict[str, ChainResult]):
     row_labels = [
         'Introduced -> InComm',
         'InComm -> OOC',
+        'InComm -> Failed',
         'OOC -> Floor',
         'OOC -> Failed',
         'Floor -> Passed',
@@ -99,6 +100,7 @@ def table1_transitions(results: dict[str, ChainResult]):
     def get_prob(r: ChainResult, row: str) -> float:
         if row == 'Introduced -> InComm':   return r.Q[0, 1]
         if row == 'InComm -> OOC':          return r.Q[1, 2]
+        if row == 'InComm -> Failed':       return r.R[1, 1]
         if row == 'OOC -> Floor':           return r.Q[2, 3]
         if row == 'OOC -> Failed':          return r.R[2, 1]
         if row == 'Floor -> Passed':        return r.R[3, 0]
@@ -397,9 +399,9 @@ def table8_time_heterogeneity(all_bills: dict[str, list]):
 # Table A1: Bootstrap confidence intervals
 # ---------------------------------------------------------------------------
 
-def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 5000):
-    """Print Appendix Table A1: bootstrap 95% confidence intervals."""
-    header("TABLE A1 — Bootstrap 95% confidence intervals")
+def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
+    """Print Table 4 bootstrap 95% confidence intervals."""
+    header("TABLE 4 (bootstrap) — 95% confidence intervals")
     print(f"  ({n_resamples} resamples per session)\n")
 
     years = sorted(all_bills.keys())

@@ -34,14 +34,26 @@ import urllib.request
 # sources below.
 DOWNLOADS = {
     "2022-house-final-status-sheet-accessible.pdf": [
+        "https://content.leg.colorado.gov/sites/default/files/2022-house-final-status-sheet-accessible.pdf",
         "https://content.leg.colorado.gov/sites/default/files/2022_House_Status_Sheet.pdf",
     ],
+    # 2023: the regular-session sheet (14 pp, HB 23-1001 onward). NOT the two-page
+    # First Extraordinary Session sheet at .../2023_House_Status_Sheet.pdf.
     "2023-house-final-status-sheet-accessible.pdf": [
-        "https://content.leg.colorado.gov/sites/default/files/2023_House_Status_Sheet.pdf",
+        "https://content.leg.colorado.gov/sites/default/files/2023-house-final-status-sheet-accessible.pdf",
     ],
     "2024-house-final-status-sheet-accessible.pdf": [
+        "https://content.leg.colorado.gov/sites/default/files/2024-house-final-status-sheet-accessible.pdf",
         "https://leg.colorado.gov/sites/default/files/2024_house_final_status_sheet.pdf",
     ],
+}
+
+# Post-download sanity check: each sheet must identify its own session, which
+# distinguishes the 2023 regular-session file from the extraordinary-session one.
+EXPECTED_SESSION = {
+    "2022-house-final-status-sheet-accessible.pdf": "SECOND REGULAR SESSION",
+    "2023-house-final-status-sheet-accessible.pdf": "FIRST REGULAR SESSION",
+    "2024-house-final-status-sheet-accessible.pdf": "SECOND REGULAR SESSION",
 }
 
 MANUAL_SOURCES = """
@@ -53,7 +65,7 @@ Manual download sources (Colorado General Assembly, public records)
       https://content.leg.colorado.gov/publications/2024-house-status-sheet
   Direct files (if still hosted):
       https://content.leg.colorado.gov/sites/default/files/2022_House_Status_Sheet.pdf
-      https://content.leg.colorado.gov/sites/default/files/2023_House_Status_Sheet.pdf
+      https://content.leg.colorado.gov/sites/default/files/2023-house-final-status-sheet-accessible.pdf
       https://leg.colorado.gov/sites/default/files/2024_house_final_status_sheet.pdf
 
 Save each as ./data/<target-filename> exactly as listed above, then re-run
@@ -73,6 +85,22 @@ def _download(url, dest):
     with open(dest, "wb") as f:
         f.write(data)
     return len(data)
+
+
+
+def verify(fname):
+    """Confirm the downloaded sheet identifies the expected session (guards
+    against fetching the wrong 2023 file)."""
+    import pdfplumber
+    dest = os.path.join(DATA_DIR, fname)
+    want = EXPECTED_SESSION[fname]
+    with pdfplumber.open(dest) as pdf:
+        head = (pdf.pages[0].extract_text() or "").upper()
+    if want not in head:
+        raise SystemExit(
+            f"SANITY CHECK FAILED: {dest} does not identify '{want}'. "
+            f"You likely fetched the wrong file. See MANUAL_SOURCES below.\n{MANUAL_SOURCES}")
+    print(f"[ok  ] {fname}: '{want}' confirmed")
 
 
 def main():
@@ -103,7 +131,9 @@ def main():
         print("Could not download:", ", ".join(failed))
         print(MANUAL_SOURCES)
         sys.exit(1)
-    print("All status sheets present. Next:  python run_all.py")
+    for fname in DOWNLOADS:
+        verify(fname)
+    print("All status sheets present and session-verified. Next:  python run_all.py")
 
 
 if __name__ == "__main__":

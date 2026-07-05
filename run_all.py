@@ -2,7 +2,7 @@
 run_all.py
 ==========
 Master script: parse data, compute all results, and generate all figures
-for the paper "Bottlenecks and Bicameral Divergence: A Markov Chain
+for the paper "Bottlenecks and Committee Filtering: A Markov Chain
 Analysis of Bill Progression in the Colorado General Assembly."
 
 This script is a convenience wrapper.  You can also run each module
@@ -24,7 +24,7 @@ Steps performed
     1. Parse the three Colorado House status sheet PDFs
     2. Estimate the absorbing Markov chain for each session
     3. Print all paper tables to stdout (or --tables-out file)
-    4. Generate all five figures as PNG files
+    4. Generate Figures 2-6 as PNG files (Figure 1 is a separately maintained schematic)
     5. Optionally compute bootstrap confidence intervals
 
 Data requirements
@@ -107,9 +107,9 @@ def main():
     parser = argparse.ArgumentParser(
         description='Run the full Markov chain legislative analysis pipeline.')
     parser.add_argument('--bootstrap', action='store_true',
-                        help='Run bootstrap CIs for Appendix table (~3 min)')
-    parser.add_argument('--n-resamples', type=int, default=5000,
-                        help='Bootstrap resamples (default: 5000)')
+                        help='Run Table 4 bootstrap 95% CIs (~3 min)')
+    parser.add_argument('--n-resamples', type=int, default=2000,
+                        help='Bootstrap resamples (default: 2000, matching the manuscript)')
     parser.add_argument('--figures-out', default='figures',
                         help='Directory for figure PNGs (default: figures/)')
     parser.add_argument('--tables-out', default=None,
@@ -161,7 +161,7 @@ def main():
         print("\nStep 2b: Bootstrap CIs (this may take a few minutes)...")
         tableA1_bootstrap(all_bills, n_resamples=args.n_resamples)
     else:
-        print("\n[Appendix bootstrap table omitted. Use --bootstrap to include.]")
+        print("\n[Table 4 bootstrap CIs omitted. Use --bootstrap to include.]")
 
     # Restore stdout if redirected
     if args.tables_out:
@@ -179,11 +179,13 @@ def main():
     # and copy if user specified an alternate output directory
     import generate_figures as gf
     gf.FIGDIR = args.figures_out
-    fig_transition_probabilities()
-    fig_party_gap()
-    fig_sensitivities()
-    fig_cohorts()
-    fig_bicameral()
+    gf.fig_chain()                      # Figure 1 (separately maintained schematic)
+    gf.fig_transition_probabilities()   # Figures 2-6 computed from data
+    gf.fig_party_gap()
+    gf.fig_sensitivities()
+    gf.fig_cohorts()
+    gf.fig_bicameral()
+    print("  Figure 1 is a separately maintained schematic; Figures 2-6 are computed from data.")
 
     # ------------------------------------------------------------------
     # Step 4: Summary
@@ -195,7 +197,7 @@ def main():
         r = results[yr]
         print(f"\n{yr}:")
         print(f"  Passage rate:         {r.B[0,0]:.4f}")
-        print(f"  Bottleneck rate:      {r.bottleneck_rate:.4f}")
+        print(f"  OOC failure rate:     {r.bottleneck_rate:.4f}")
         print(f"  Floor failure rate:   {r.R[3,1]:.4f}")
         print(f"  Floor sensitivity:    {r.floor_sensitivity:.4f}")
         print(f"  OOC sensitivity:      {r.ooc_sensitivity:.4f}")

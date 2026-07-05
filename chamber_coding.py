@@ -6,35 +6,25 @@ from an auditable data file instead of hardcoded counts.
 
 Background
 ----------
-In the shipped repo, `generate_figures.fig_bicameral` hardcodes the counts:
-
-    data = {'2022': [6, 2, 4, 2], '2023': [10, 1, 6, 2], '2024': [16, 3, 5, 5]}
-
-and no `chamber_coding.csv` is included, so the paper's strongest surviving
-claim (the bicameral decomposition) cannot be independently audited. This
-module reads `data/chamber_coding.csv` (scaffold provided alongside), validates
-it against the totals the corrected parser produces, and exposes a
-`component_counts()` function that `fig_bicameral` can call instead of the
-hardcoded dict.
+The bicameral decomposition (Tables 6-7) attributes each On-Floor failure to a
+mode of death. This module reads the completed manual coding in
+`data/chamber_coding.csv`, validates the per-year totals against the corrected
+parser's On_Floor -> Failed set, and exposes a `component_counts()` function
+that `fig_bicameral` calls instead of a hardcoded dict.
 
 CSV schema
 ----------
-    bill_num    : int   HB number (e.g. 1115). Blank in scaffold rows you
-                        have not yet coded from the raw PDF.
+    bill_num    : int   HB number (e.g. 1115).
     year        : str   '2022' | '2023' | '2024'
     chamber     : str   one of: Senate-side | House-side | Veto | Session-end
                         (see Definition 5.1 in the paper for the coding rule)
-    policy_area : str   optional, used for the 2023 Table 5 breakdown
+    policy_area : str   optional, used for the 2023 Table 6 breakdown
     note        : str   optional free text
-    verified    : str   'YES' once you have confirmed the row against the raw
-                        status-sheet text; 'NO' for scaffold placeholders
+    verified    : str   'YES' once the row is confirmed against the raw
+                        status-sheet text
 
-The scaffold is pre-seeded so that the per-cell counts already equal the
-paper's Table 6 (14/19/29 = 62 floor failures) and the 10 named 2023
-Senate-side bills from Table 5 are filled in and marked verified. Your job is
-to fill in the remaining `bill_num` cells from the PDFs and flip `verified`
-to YES, WITHOUT changing any per-cell row count -- the validator below fails
-loudly if a count drifts from the parser's actual On_Floor->Failed set.
+All 62 rows are coded and verified. The validator below fails loudly if any
+per-year total drifts from the parser's actual On_Floor -> Failed set.
 
 Usage
 -----
@@ -61,7 +51,7 @@ COMPONENTS = ['Senate-side', 'House-side', 'Veto', 'Session-end']
 PAPER_TABLE6 = {
     '2022': {'Senate-side': 6, 'House-side': 2, 'Veto': 4, 'Session-end': 2},
     '2023': {'Senate-side': 10, 'House-side': 1, 'Veto': 6, 'Session-end': 2},
-    '2024': {'Senate-side': 16, 'House-side': 3, 'Veto': 5, 'Session-end': 5},
+    '2024': {'Senate-side': 12, 'House-side': 3, 'Veto': 5, 'Session-end': 9},
 }
 
 
@@ -109,7 +99,7 @@ def validate(all_bills=None, path=CSV_PATH, strict=True):
          corrected parser produces (if `all_bills` supplied) -- otherwise
          falls back to comparing against PAPER_TABLE6 totals,
       3. no duplicate (bill_num, year) among verified rows,
-      4. reports how many rows are still unverified placeholders.
+      4. reports how many rows are unverified (should be 0).
     Returns True on success; raises AssertionError on a hard mismatch.
     """
     rows = load_rows(path)
