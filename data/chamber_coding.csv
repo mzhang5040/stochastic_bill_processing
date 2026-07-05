@@ -13,16 +13,16 @@ bill_num,year,chamber,policy_area,note,verified
 1399,2022,Veto,,,YES
 1048,2022,Session-end,,,YES
 1417,2022,Session-end,,,YES
-1028,2023,Senate-side,,,YES
-1065,2023,Senate-side,,,YES
-1066,2023,Senate-side,,,YES
-1078,2023,Senate-side,,,YES
-1090,2023,Senate-side,,,YES
-1115,2023,Senate-side,,,YES
-1165,2023,Senate-side,,,YES
-1171,2023,Senate-side,,,YES
-1202,2023,Senate-side,,,YES
-1206,2023,Senate-side,,,YES
+1028,2023,Senate-side,Other,,YES
+1065,2023,Senate-side,Ethics & governance,,YES
+1066,2023,Senate-side,Other,,YES
+1078,2023,Senate-side,Workers & labor,,YES
+1090,2023,Senate-side,Ethics & governance,,YES
+1115,2023,Senate-side,Housing & tenancy,,YES
+1165,2023,Senate-side,Firearms & public safety,,YES
+1171,2023,Senate-side,Housing & tenancy,,YES
+1202,2023,Senate-side,Public health & harm reduction,,YES
+1206,2023,Senate-side,Ethics & governance,,YES
 1159,2023,House-side,,,YES
 1146,2023,Veto,,,YES
 1147,2023,Veto,,,YES
