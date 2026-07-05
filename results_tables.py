@@ -410,6 +410,7 @@ def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
         ('Bottleneck rate',         'bottleneck_rate',    True),
         ('Floor failure rate',      'floor_failure_rate', True),
         ('Passage rate B[0,0]',     'passage_rate',       True),
+        ('First-committee sensitivity -B[2,0]', 'first_committee_sensitivity', False),
         ('Floor sensitivity -N[0,3]', 'floor_sensitivity', False),
         ('OOC sensitivity -N[0,2]*B[3,0]', 'ooc_sensitivity', False),
     ]
@@ -430,6 +431,8 @@ def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
                 pt = point.R[3, 1]
             elif key == 'passage_rate':
                 pt = point.B[0, 0]
+            elif key == 'first_committee_sensitivity':
+                pt = -point.B[2, 0]
             elif key == 'floor_sensitivity':
                 pt = point.floor_sensitivity
             elif key == 'ooc_sensitivity':
@@ -442,6 +445,13 @@ def tableA1_bootstrap(all_bills: dict[str, list], n_resamples: int = 2000):
             else:
                 print(f"  {lbl_col:<35} {yr:>7} {pt:8.4f} {sd:7.4f}  [{lo:.4f}, {hi:.4f}]")
 
+    print()
+    print("  P(|OOC sensitivity| > |Floor sensitivity|) across resamples:")
+    for yr in years:
+        b = bootstrap_chain(all_bills[yr], n_resamples=n_resamples)
+        prob = float(np.mean(np.abs(b['ooc_sensitivity']) > np.abs(b['floor_sensitivity'])))
+        print(f"    {yr}: {prob:.0%}")
+
 
 # ---------------------------------------------------------------------------
 # Main
@@ -452,7 +462,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compute all paper tables.')
     parser.add_argument('--bootstrap', action='store_true',
                         help='Run bootstrap CI table (slow: ~1 min per session)')
-    parser.add_argument('--n-resamples', type=int, default=5000)
+    parser.add_argument('--n-resamples', type=int, default=2000)
     parser.add_argument('--party-file', default='data/sponsor_parties.csv')
     args = parser.parse_args()
 

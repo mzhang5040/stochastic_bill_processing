@@ -158,25 +158,6 @@ def print_shares(path=CSV_PATH):
               f"House-strict={s['house_strict_pct']:.0f}%")
 
 
-if __name__ == '__main__':
-    # Try to validate against the live parser if the PDFs are present;
-    # otherwise validate against the paper's Table 6 totals.
-    all_bills = None
-    try:
-        from parse_status_sheets import parse_session, SESSIONS
-        if all(os.path.exists(p) for p, _ in SESSIONS.values()):
-            all_bills = {y: parse_session(p, y, m)
-                         for y, (p, m) in SESSIONS.items()}
-            print("[validating against live parser output]\n")
-        else:
-            print("[PDFs not found -- validating against paper Table 6 totals]\n")
-    except Exception as e:
-        print(f"[parser unavailable ({e}) -- validating against Table 6]\n")
-
-    validate(all_bills)
-    print_shares()
-
-
 def table6(path=CSV_PATH):
     """Print Table 6: the 2023 Senate-side On-Floor failures by policy area."""
     import csv as _csv
@@ -194,7 +175,24 @@ def table6(path=CSV_PATH):
     print("-" * 60)
     print(f"  {'Total':<32} {'':<28} n={total}")
 
-
 if __name__ == '__main__':
+    # Try to validate against the live parser if the PDFs are present;
+    # otherwise validate against the paper's Table 6 totals.
+    all_bills = None
+    try:
+        from parse_status_sheets import parse_session, SESSIONS
+        if all(os.path.exists(p) for p, _ in SESSIONS.values()):
+            all_bills = {y: parse_session(p, y, m)
+                         for y, (p, m) in SESSIONS.items()}
+            print("[validating against live parser output]\n")
+        else:
+            print("[PDFs not found -- validating against paper Table 6 totals]\n")
+    except Exception as e:
+        print(f"[parser unavailable ({e}) -- validating against Table 6]\n")
+
+    validate(all_bills)
     print_shares()
     table6()
+
+
+

@@ -269,6 +269,7 @@ def bootstrap_chain(bills: list[dict],
         'passage_rate': np.zeros(n_resamples),
         'floor_sensitivity': np.zeros(n_resamples),
         'ooc_sensitivity': np.zeros(n_resamples),
+        'first_committee_sensitivity': np.zeros(n_resamples),
     }
 
     for k in range(n_resamples):
@@ -281,6 +282,7 @@ def bootstrap_chain(bills: list[dict],
             boot['passage_rate'][k]       = r.B[0, 0]
             boot['floor_sensitivity'][k]  = r.floor_sensitivity
             boot['ooc_sensitivity'][k]    = r.ooc_sensitivity
+            boot['first_committee_sensitivity'][k] = -r.B[2, 0]
         except np.linalg.LinAlgError:
             # Singular resample (extremely rare); skip by repeating last value
             for key in boot:

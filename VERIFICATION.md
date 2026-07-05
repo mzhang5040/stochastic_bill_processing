@@ -95,9 +95,9 @@ Discrepancies: 0
 
 ## 4. Manually coded input (Tables 6–7)
 
-The parser identifies the 62 On-Floor failures and the veto and House-side
-counts automatically. The Senate-side versus session-end attribution is a manual
-reading recorded in `data/chamber_coding.csv` (every row `verified = YES`) and
+The parser identifies the 62 On-Floor failures. The mode-of-death classification
+(Senate-side, House-side, veto, session-end) is a manual reading recorded in
+`data/chamber_coding.csv` (every row `verified = YES`) and
 validated for per-year totals by `chamber_coding.py`. Table 7 uses this coding,
 and the manuscript matches it, including 2024: **Senate-side 12, House-side 3,
 veto 5, session-end 9**.

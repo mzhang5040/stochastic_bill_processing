@@ -1,9 +1,12 @@
 # Reproduction package — *Bottlenecks and Committee Filtering: A Markov Chain Analysis of Bill Progression in the Colorado General Assembly*
 
-This package reproduces every quantitative result, table, and figure in the JHSS
-manuscript from the primary public source data (the Colorado House status
-sheets). Given the three status-sheet PDFs (downloaded by `fetch_data.py`) and a
-Python environment, running `python run_all.py` regenerates the full analysis.
+This package reproduces the principal quantitative analyses, tables, and figures
+in the JHSS manuscript from the primary public source data (the Colorado House
+status sheets). The master script `run_all.py` generates the main transition,
+absorption, party, cohort, bootstrap, and figure outputs; additional documented
+scripts (`conditional_analysis.py`, `mh_analysis.py`, `party_by_cohort.py`,
+`test_het.py`, `validate_clearance.py`) reproduce the conditional and robustness
+analyses.
 
 ---
 
