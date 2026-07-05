@@ -35,7 +35,9 @@ analyses.
     └── <status-sheet PDFs>     Primary source data — fetched by fetch_data.py     [not included]
 ```
 
-The **raw status-sheet PDFs are not redistributed** in this package. They are
+The **raw status-sheet PDFs are not redistributed** in this package (they are
+excluded via `.gitignore`; if they appear in `data/` they were fetched locally
+and should not be committed). They are
 public records of the Colorado General Assembly; `fetch_data.py` retrieves them
 directly from the Assembly's servers. The two CSVs **are** included: one is the
 derived primary-sponsor party map, the other is the hand-coded chamber
