@@ -1,7 +1,7 @@
 """
 chamber_coding.py
 =================
-Make the bicameral decomposition (Table 6, Table 7, Figure 6) reproducible
+Make the bicameral decomposition (Table 6, Table 7, Figure 5) reproducible
 from an auditable data file instead of hardcoded counts.
 
 Background
@@ -175,3 +175,26 @@ if __name__ == '__main__':
 
     validate(all_bills)
     print_shares()
+
+
+def table6(path=CSV_PATH):
+    """Print Table 6: the 2023 Senate-side On-Floor failures by policy area."""
+    import csv as _csv
+    rows = [r for r in _csv.DictReader(open(path))
+            if r['year'] == '2023' and r['chamber'] == 'Senate-side']
+    by_area = {}
+    for r in rows:
+        by_area.setdefault(r['policy_area'] or 'Unclassified', []).append(int(r['bill_num']))
+    print("\nTABLE 6 -- 2023 Senate-side On-Floor failures by policy area")
+    print("-" * 60)
+    total = 0
+    for area in sorted(by_area, key=lambda a: (-len(by_area[a]), a)):
+        bills = sorted(by_area[area]); total += len(bills)
+        print(f"  {area:<32} {', '.join('HB'+str(b) for b in bills):<28} n={len(bills)}")
+    print("-" * 60)
+    print(f"  {'Total':<32} {'':<28} n={total}")
+
+
+if __name__ == '__main__':
+    print_shares()
+    table6()

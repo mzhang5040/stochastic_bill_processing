@@ -9,8 +9,8 @@ Tables produced
     Table 1  Transition probabilities (Q and R matrices)
     Table 2  Failures by stage
     Table 3  Absorption probabilities B and expected steps t
-    Table 5  Bicameral decomposition (requires manual coding CSV)
-    Table 7  Party stratification (requires sponsor party CSV)
+    Table 5  Party stratification (requires sponsor coding CSV)
+    Table 7  Bicameral decomposition (requires sponsor party CSV)
     Table 8  Within-session time heterogeneity chi-square tests
     Table 4 bootstrap 95% confidence intervals
 

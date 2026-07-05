@@ -1,4 +1,4 @@
-"""Party gap by introduction-date tertile (robustness check for SIURO 4e)."""
+"""Party gap by introduction-date tertile (robustness check)."""
 import csv, re, pdfplumber
 import parse_status_sheets as p
 from scipy.stats import fisher_exact

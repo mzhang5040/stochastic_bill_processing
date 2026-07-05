@@ -44,7 +44,7 @@ Data requirements
     Optional (for bicameral decomposition verification):
         data/chamber_coding.csv
         Columns: bill_num (int), year (str),
-                 chamber ('Senate', 'House', or 'Session-end')
+                 chamber ('Senate-side', 'House-side', 'Veto', or 'Session-end')
         This CSV records the manual coding of the 62 On_Floor failures
         (14 in 2022, 19 in 2023, 29 in 2024). See chamber_coding.py, which
         validates these totals against the parser's floor-failure counts.
@@ -179,12 +179,12 @@ def main():
     # and copy if user specified an alternate output directory
     import generate_figures as gf
     gf.FIGDIR = args.figures_out
-    gf.fig_chain()                      # Figure 1 (separately maintained schematic)
-    gf.fig_transition_probabilities()   # Figures 2-6 computed from data
-    gf.fig_party_gap()
-    gf.fig_sensitivities()
-    gf.fig_cohorts()
-    gf.fig_bicameral()
+    gf.fig_chain()                          # Figure 1 (separately maintained schematic)
+    gf.fig_transition_probabilities(all_bills)   # Figures 2-6 reuse the already-parsed data
+    gf.fig_party_gap(all_bills)
+    gf.fig_sensitivities(all_bills)
+    gf.fig_cohorts(all_bills)
+    gf.fig_bicameral(all_bills)
     print("  Figure 1 is a separately maintained schematic; Figures 2-6 are computed from data.")
 
     # ------------------------------------------------------------------

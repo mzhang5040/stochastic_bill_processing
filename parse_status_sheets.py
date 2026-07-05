@@ -40,7 +40,7 @@ Verification
 ------------
 Running this module directly (python parse_status_sheets.py) prints
 the passage rate per session.  After excluding supplemental
-appropriations (which pass by construction; see parse_session below):
+appropriations (which all passed in the observed sample; see parse_session below):
     2022: 76.5%    2023: 70.1%    2024: 73.3%
 
 Input files
@@ -459,7 +459,7 @@ def parse_session(pdf_path, year, bill_max):
         #   next day -> SIG within weeks
         #
         # Including them would inflate the passage rate and distort the
-        # Markov chain because they always pass by construction. Pattern:
+        # Markov chain because they all passed in the observed sample. Pattern:
         # N/A present, APP committee activity, SIG present, no PI marker.
         #
         # An earlier version of this filter was broader and also dropped a

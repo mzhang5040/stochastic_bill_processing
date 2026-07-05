@@ -112,7 +112,7 @@ manuscript's figure files; it is not generated from the data.
 ## 5. Expected output (correctness check)
 
 A correct run reports these per-session passage rates (after excluding
-supplemental appropriations, which pass by construction):
+supplemental appropriations, which all passed in the observed sample):
 
 ```
 2022: 76.5%   2023: 70.1%   2024: 73.3%
@@ -141,7 +141,7 @@ internal-consistency check.
   be regenerated from the PDFs plus the 73rd/74th GA rosters with
   `build_party_map.py`.
 - **`data/chamber_coding.csv`** — one row per floor failure: `bill_num`,
-  `year`, `chamber` (`Senate`/`House`/`Session-end`). Encodes the manual coding
+  `year`, `chamber` (`Senate-side`/`House-side`/`Veto`/`Session-end`). Encodes the manual coding
   of all 62 On-Floor failures (14 in 2022, 19 in 2023, 29 in 2024) used for the
   bicameral decomposition; `chamber_coding.py` validates these totals against the
   parser's floor-failure counts.
